@@ -33,7 +33,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 model = Sequential(name='Heart_Attack')
 model.add(Dense(input_dim=dataset_x.shape[1], units=100, activation='relu', name='Hidden-1'))
-model.add(Dense(units=100, activation='relu', name='Hidde-2'))
+model.add(Dense(units=100, activation='relu', name='Hidden-2'))
 model.add(Dense(units=1, activation='sigmoid', name='Output'))
 
 
@@ -65,6 +65,24 @@ plt.legend(['Binary Accuracy', 'Validation Binary Accuracy'])
 plt.show()
 
 
-#Daha sonra test datasetımızı de
+#Daha sonra test datasetımızı de scale ettık ve daha sonra test datasetımız aracılıgı ıle evaluate ıslemınde bulunduk
 test_dataset_x = mms.transform(test_dataset_x)
 test_result = model.evaluate(test_dataset_x, test_dataset_y)
+for i in range(len(test_result)):
+    print(f'{model.metrics_names[i]}, {test_result[i]}')
+
+
+#Daha sonra modelımızde kullancagımız predıct datalara da scale ıslemı yaptık.
+predict_data = np.loadtxt('predicted_heart_failure_data.csv', delimiter=',')
+# print(predict_data)
+mms.fit(predict_data)
+scaled_data = mms.transform(predict_data)
+
+#Daha sonra da predict ıslemınde bulunduk
+predicted_result = model.predict(scaled_data)
+
+for i in range(len(predicted_result)):
+    if predicted_result[i, 0] > 0.5:
+        print('Bu kisi kalp krizinden ÖLEBİLİR')
+    else:
+        print('Bu kisi kalp krizinden ÖLMEZ')
